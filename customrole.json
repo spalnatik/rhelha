@@ -1,5 +1,5 @@
 {
-      "Name": "Linux Fence Agent Role",
+      "Name": "RH Fence Agent Role",
       "description": "Allows to power-off and start virtual machines",
       "assignableScopes": [
               "/subscriptions/$subscriptionID"
