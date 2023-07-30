@@ -1,7 +1,7 @@
 #!/bin/bash
 
 #Create Pacemaker cluster
-read -r PASSWORD
+PASSWORD=$PASSWORD
 
 echo "$PASSWORD" | pcs host auth prod-cl1-0 prod-cl1-1 -u hacluster
 sudo pcs cluster setup nw1-azr prod-cl1-0 prod-cl1-1 totem token=30000
