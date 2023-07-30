@@ -17,8 +17,8 @@ echo '# IP address of the first cluster node
 
 
 #Change hacluster password to the same password
-PASSWORD="$1"
-echo "$PASSWORD" | sudo passwd --stdin hacluster
+
+echo "abc@12345678" | sudo passwd --stdin hacluster
 
 #Add firewall rules for pacemaker
 
