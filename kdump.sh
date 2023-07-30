@@ -27,4 +27,4 @@ else
 fi
 
 echo "install fence_kdump agent"
-yum install fence-agents-kdump
+yum install fence-agents-kdump -y
