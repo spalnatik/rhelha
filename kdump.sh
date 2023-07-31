@@ -4,7 +4,6 @@
 if yum list installed | grep -q "^kexec-tools\."; then
     echo "kdump is already installed."
 else
-    echo "kdump is not installed. Installing..."
     sudo yum install -y kexec-tools
     echo "kdump has been installed."
 fi
