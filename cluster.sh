@@ -64,14 +64,14 @@ az vm extension set \
     --vm-name $vmname1 \
     --name customScript \
     --publisher Microsoft.Azure.Extensions \
-    --protected-settings '{"fileUris": ["https://raw.githubusercontent.com/spalnatik/rhelha/main/install.sh"],"commandToExecute": "./install.sh"}' >> $logfile >> $logfile
+    --protected-settings '{"fileUris": ["https://raw.githubusercontent.com/spalnatik/rhelha/main/install.sh"],"commandToExecute": "./install.sh"}' >> $logfile 
 
     az vm extension set \
     --resource-group $rgname \
     --vm-name $vmname2 \
     --name customScript \
     --publisher Microsoft.Azure.Extensions \
-    --protected-settings '{"fileUris": ["https://raw.githubusercontent.com/spalnatik/rhelha/main/install.sh"],"commandToExecute": "./install.sh"}' >> $logfile >> $logfile
+    --protected-settings '{"fileUris": ["https://raw.githubusercontent.com/spalnatik/rhelha/main/install.sh"],"commandToExecute": "./install.sh"}' >> $logfile 
 
 
 echo " Creating Pacemaker cluster on node1"
