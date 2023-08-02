@@ -2,6 +2,20 @@
 
 #Install RHEL HA Add-On
 
+# Check if the OS is Red Hat 7.x
+if grep -q 'Red Hat Enterprise Linux Server release 7' /etc/redhat-release; then
+    echo "Detected Red Hat 7.x. Installing rhui-azure-* packages..."
+    
+    # Execute the command to install rhui-azure-* packages
+    sudo yum install --disablerepo='*' --enablerepo='*microsoft*' 'rhui-azure-*' -y
+
+    echo "Installation completed."
+else
+    echo "This script is intended for Red Hat 7.x. Exiting..."
+    exit 1
+fi
+
+
 sudo yum install -y pcs pacemaker fence-agents-azure-arm nmap-ncat
 
 # Check the version of the Azure Fence Agent
