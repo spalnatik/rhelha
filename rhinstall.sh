@@ -10,9 +10,6 @@ if grep -q 'Red Hat Enterprise Linux Server release 7' /etc/redhat-release; then
     sudo yum install --disablerepo='*' --enablerepo='*microsoft*' 'rhui-azure-*' -y
 
     echo "Installation completed."
-else
-    echo "This script is intended for Red Hat 7.x. Exiting..."
-    exit 1
 fi
 
 
