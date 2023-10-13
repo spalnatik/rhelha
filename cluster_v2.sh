@@ -10,12 +10,17 @@ echo "Script execution started at: $timestamp"
 vmname1="prod-cl1-0"
 vmname2="prod-cl1-1"
 rgname="rhel-ha"
+asname="rhelhaset"
 offer="RedHat:RHEL-SAP-HA:8.2:latest"
 loc="eastus"
 sku_size="Standard_D2s_v3"
 vnetname="rhel-ha-vnet"
 subnetname="ha-subnet"
 logfile="ha.log"
+lbname="rhel-ha-lb"
+frontendip="nw-frontend"
+backendpoolname="nw-backend"
+probename="nw-hp"
 
 # Parse command line arguments
 while getopts "i:" opt; do
@@ -46,15 +51,36 @@ date >> "$logfile"
 echo "Creating RG $rgname.."
 az group create --name "$rgname" --location "$loc" >> "$logfile"
 
+echo "Creating availability set .."
+az vm availability-set create -n $asname -g $rgname --platform-fault-domain-count 3 --platform-update-domain-count 20 --no-wait >> $logfile
+
 echo "Creating VNET .."
 az network vnet create --name "$vnetname" -g "$rgname" --address-prefixes 10.0.0.0/24 --subnet-name "$subnetname" --subnet-prefixes 10.0.0.0/24 >> "$logfile"
 
+echo "Creating load balancer .."
+az network lb create --resource-group $rgname --name $lbname --location $loc --backend-pool-name $backendpoolname --frontend-ip-name $frontendip --private-ip-address "10.0.0.13" --sku "Standard" --vnet-name $vnetname --subnet $subnetname --no-wait >> $logfile
+
 echo "Creating First node"
-az vm create -g "$rgname" -n "$vmname1" --admin-username "$username" --admin-password "$password" --image "$offer" --vnet-name "$vnetname" --subnet "$subnetname" --public-ip-sku Standard --private-ip-address "10.0.0.6" --no-wait >> "$logfile"
+az vm create -g "$rgname" -n "$vmname1" --admin-username "$username" --admin-password "$password" --availability-set $asname --image "$offer" --vnet-name "$vnetname" --subnet "$subnetname" --public-ip-sku Standard --private-ip-address "10.0.0.6" --no-wait >> "$logfile"
 
 echo "Creating Second node"
-az vm create -g "$rgname" -n "$vmname2" --admin-username "$username" --admin-password "$password" --image $offer --vnet-name "$vnetname" --subnet "$subnetname" --public-ip-sku Standard --private-ip-address "10.0.0.7" >> "$logfile"
+az vm create -g "$rgname" -n "$vmname2" --admin-username "$username" --admin-password "$password" --availability-set $asname --image "$offer" --vnet-name "$vnetname" --subnet "$subnetname" --public-ip-sku Standard --private-ip-address "10.0.0.7" >> "$logfile"
 
+echo "Creating a health probe"
+az network lb probe create --lb-name $lbname --resource-group $rgname --name $probename --port 61000 --protocol Tcp >> $logfile
+
+echo "Creating Backend pool configuration"
+nic1name1=`az vm show -g $rgname -n $vmname1  --query networkProfile.networkInterfaces[].id -o tsv | cut -d / -f 9`
+az network nic ip-config address-pool add --address-pool $backendpoolname --ip-config-name ipconfig$vmname1 --nic-name $nic1name1 --resource-group $rgname --lb-name $lbname  >> $logfile
+
+nic1name2=`az vm show -g $rgname -n $vmname2  --query networkProfile.networkInterfaces[].id -o tsv | cut -d / -f 9` 
+az network nic ip-config address-pool add --address-pool $backendpoolname --ip-config-name ipconfig$vmname2 --nic-name $nic1name2 --resource-group $rgname --lb-name $lbname  >> $logfile
+
+echo "Creating load balancing rule .."
+az network lb rule create --resource-group $rgname --lb-name $lbname --name "ha-lb-rule" --backend-port 0 --frontend-port 0 \
+ --frontend-ip-name $frontendip --backend-pool-name $backendpoolname --protocol All --floating-ip true \
+ --idle-timeout 30 --probe-name $probename  >> $logfile
+ 
 echo "Installing RHEL AD ON on both the nodes"
 
 #export password
@@ -64,14 +90,14 @@ az vm extension set \
     --vm-name $vmname1 \
     --name customScript \
     --publisher Microsoft.Azure.Extensions \
-    --protected-settings '{"fileUris": ["https://raw.githubusercontent.com/spalnatik/rhelha/main/install.sh"],"commandToExecute": "./install.sh"}' >> $logfile 
+    --protected-settings '{"fileUris": ["https://raw.githubusercontent.com/spalnatik/rhelha/main/rhinstall.sh"],"commandToExecute": "./rhinstall.sh"}' >> $logfile 
 
     az vm extension set \
     --resource-group $rgname \
     --vm-name $vmname2 \
     --name customScript \
     --publisher Microsoft.Azure.Extensions \
-    --protected-settings '{"fileUris": ["https://raw.githubusercontent.com/spalnatik/rhelha/main/install.sh"],"commandToExecute": "./install.sh"}' >> $logfile 
+    --protected-settings '{"fileUris": ["https://raw.githubusercontent.com/spalnatik/rhelha/main/rhinstall.sh"],"commandToExecute": "./rhinstall.sh"}' >> $logfile 
 
 
 echo " Creating Pacemaker cluster on node1"
@@ -169,6 +195,14 @@ fi
 
 # Set the VM extension
 
+echo "configure resource IPaddr2 and azure-lb"
+az vm extension set \
+    --resource-group $rgname \
+    --vm-name $vmname1 \
+    --name customScript \
+    --publisher Microsoft.Azure.Extensions \
+    --protected-settings '{"fileUris": ["https://raw.githubusercontent.com/spalnatik/rhelha/main/resource.sh"],"commandToExecute": "./resource.sh"}' >> $logfile
+    
 echo "kdump installation on both the nodes"
 az vm extension set \
     --resource-group $rgname \
