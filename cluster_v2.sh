@@ -77,6 +77,7 @@ az vm extension set \
 echo " Creating Pacemaker cluster on node1"
 
 version=$(echo "$offer" | grep -oE '([0-9]+[._][0-9]+)')
+offersap=$(echo $offer|cut -d ':' -f3)
 
 if [[ "$version" =~ ^7[._][1-9] || "$offersap" =~ ^7[1-9][sap*] ]]; then
     echo "The offer is rhel7 image"
