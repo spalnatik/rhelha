@@ -4,8 +4,8 @@ sudo pcs property set stonith-timeout=900
 #!/bin/bash
 
 # Get the pacemaker version
-#pacemaker_version=$(rpm -q --queryformat "%{VERSION}-%{RELEASE}\n" pacemaker)
-pacemaker_version="2.0.4-5.el8_2.5"
+pacemaker_version=$(rpm -q --queryformat "%{VERSION}-%{RELEASE}\n" pacemaker)
+
 
 # Define the target version to compare against
 target_version="2.0.4-6"
