@@ -66,6 +66,10 @@ az vm create -g "$rgname" -n "$vmname1" --admin-username "$username" --admin-pas
 echo "Creating Second node"
 az vm create -g "$rgname" -n "$vmname2" --admin-username "$username" --admin-password "$password" --availability-set $asname --image "$offer" --vnet-name "$vnetname" --subnet "$subnetname" --public-ip-sku Standard --private-ip-address "10.0.0.7" >> "$logfile"
 
+echo "Enabling boot diagnostics"
+az vm boot-diagnostics enable --name "$vmname1" --resource-group "$rgname" >> "$logfile"
+az vm boot-diagnostics enable --name "$vmname2" --resource-group "$rgname" >> "$logfile"
+
 echo "Creating a health probe"
 az network lb probe create --lb-name $lbname --resource-group $rgname --name $probename --port 61000 --protocol Tcp >> $logfile
 
