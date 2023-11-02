@@ -1,3 +1,7 @@
+#!/bin/bash
+
+rgname=$1
+subscriptionID=$2
 sudo pcs property set stonith-timeout=900
 
 #!/bin/bash
