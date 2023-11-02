@@ -5,6 +5,6 @@ subscriptionID=$2
 sudo pcs property set stonith-timeout=900
 
 #!/bin/bash
-pcs stonith create rsc_st_azure fence_azure_arm msi=true resourceGroup="rhel-ha" subscriptionId="152eb83a-1242-4c87-9b30-668a34d57eae" power_timeout=240 pcmk_reboot_timeout=900 pcmk_monitor_timeout=120 pcmk_monitor_retries=4 pcmk_action_limit=3 op monitor interval=3600       
+pcs stonith create rsc_st_azure fence_azure_arm msi=true resourceGroup="$rgname" subscriptionId="$subscriptionID" power_timeout=240 pcmk_reboot_timeout=900 pcmk_monitor_timeout=120 pcmk_monitor_retries=4 pcmk_action_limit=3 op monitor interval=3600       
 
 sudo pcs property set stonith-enabled=true
