@@ -1,4 +1,12 @@
 # rhelha
+
+************* ****version 2.0**** *************
+
+I am sharing the updated cluster_v2.sh script (Version 2.0) which now includes new configurations.
+
+![image](https://github.com/spalnatik/rhelha/assets/139609488/4a4e9f40-2d35-4c17-b89d-faf505278ba9)
+
+
 **Setting up Pacemaker on Red Hat Enterprise Linux in Azure**
 
   The script performs the steps outlined in the provided documentation:
