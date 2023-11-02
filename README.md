@@ -13,7 +13,7 @@ I am sharing the updated cluster_v2.sh script (Version 2.0) which now includes n
  
 Setting up Pacemaker on RHEL in Azure | Microsoft Learn URL: https://learn.microsoft.com/en-us/azure/sap/workloads/high-availability-guide-rhel-pacemaker?tabs=spn
 
-Azure SAP Pacemaker MSI SPN (microsoft.com)
+Azure SAP Pacemaker MSI SPN (microsoft.com) https://techcommunity.microsoft.com/t5/running-sap-applications-on-the/sap-on-azure-high-availability-change-from-spn-to-msi-for/ba-p/3609278
  
 **Usage:**
  
