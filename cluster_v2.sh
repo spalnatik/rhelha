@@ -170,7 +170,7 @@ az role assignment create --assignee $spID1 --role 'Virtual Machine Contributor'
 
 #sleep 120
 
-echo "creating fecing devices"
+echo "creating fencing devices"
 
 export rgname
 export subscriptionID
