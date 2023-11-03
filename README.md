@@ -23,7 +23,7 @@ Azure SAP Pacemaker MSI SPN (microsoft.com) https://techcommunity.microsoft.com/
 -	Create resource group, VNET and 2 VM’s.
 -	By default it uses redhat 8.2 for SAP( RedHat:RHEL-SAP-HA:8.2:latest), you can use any other sap image by adding the option -i and image Urn.
 Ex:
-./cluster.sh -i RedHat:RHEL-SAP-HA:8_6:latest
+./cluster_v2.sh -i RedHat:RHEL-SAP-HA:8_6:latest
 -	Starting a custom script extension to configure:
   -	Install cluster packages, configure firewall rules and start the pacemaker service on both the nodes.
   -	Configure/create pacemaker cluster on node1.
