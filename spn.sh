@@ -1,9 +1,11 @@
 #!/bin/bash
 
-rgname=$1
-subscriptionID=$2
-clientid=$3
-clientsecret=$4
+
+clientid=$1
+clientsecret=$2
+rgname=$3
+subscriptionID=$4
+
 sudo pcs property set stonith-timeout=900
 
 #!/bin/bash
