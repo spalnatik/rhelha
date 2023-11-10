@@ -4,6 +4,11 @@
 
 I am sharing the updated cluster_v2.sh script (Version 2.0) which now includes new configurations.
 
+Added another option to choose the type of azure fencing agent :
+
+1) service principal
+2) managed Identity
+
 ![image](https://github.com/spalnatik/rhelha/assets/139609488/4a4e9f40-2d35-4c17-b89d-faf505278ba9)
 
 
