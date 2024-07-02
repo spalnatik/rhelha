@@ -192,7 +192,8 @@ if [ "$choice" = "1" ]; then
     clientsecretduration=2
     clientsecret=$(az ad app credential reset --id $clientid --append --display-name $clientsecretname --years $clientsecretduration --query password --output tsv)
 
-    az role assignment create --assignee $clientid --role "Virtual Machine Contributor" --resource-group $rgname
+    #az role assignment create --assignee $clientid --role "Virtual Machine Contributor" --resource-group $rgname
+    az role assignment create --assignee $clientid --role "Virtual Machine Contributor" --scope  /subscriptions/$subscriptionID/resourceGroups/$rgname
     echo "creating fencing devices"
 
     export rgname
