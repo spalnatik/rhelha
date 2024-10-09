@@ -46,10 +46,47 @@ fi
 
 echo " "
 
+# Function to check if the app registration name exists
+check_app_exists() {
+  local appregname="$1"
+  app_exists=$(az ad app list --display-name "$appregname" --query "[0].appId" --output tsv)
+  [[ -n "$app_exists" ]]
+}
+
+# Prompt the user for the Azure fence agent device choice
 echo "Choose the Azure fence agent device:"
-echo "1. sp(service principal)"
-echo "2. msi(managed identity)"
+echo "1. sp (service principal)"
+echo "2. msi (managed identity)"
 read -p "Enter the number of your choice: " choice
+
+case $choice in
+  1)
+    # If the choice is 1, ask for the app registration name
+    while true; do
+      read -p "Enter the app registration name: " appregname
+
+      if check_app_exists "$appregname"; then
+        echo "An app registration with this name already exists. Please enter a different name."
+      else
+        echo "App registration name is available."
+        break
+      fi
+    done
+
+    # Output or use the appregname variable as needed
+    echo "The available app registration name is: $appregname"
+    ;;
+
+  2)
+    # If the choice is 2, just acknowledge the selection
+    echo "You selected managed identity (msi)."
+    ;;
+
+  *)
+    echo "Invalid choice. Please select either 1 or 2."
+    exit 1
+    ;;
+esac
 
 # Execute the corresponding function based on the user's choice
 
@@ -167,22 +204,10 @@ fi
 
 if [ "$choice" = "1" ]; then
 
-    appregname=myclusterspauto
+    appregname=$appregname
     subscriptionID=$(az group show --name "rhel-ha" --query "id" --output tsv | cut -d '/' -f 3) >> $logfile
     app_exists=$(az ad app list --display-name "$appregname" --query "[0].appId" --output tsv)
-
-    if [ -z "$app_exists" ]; then
-        echo "Azure AD App with the name '$appregname' doesn't exist."
-    else
-    # The App exists, so delete it
-        echo "Azure AD App with the name '$appregname' already exists. Deleting the existing App..."
-        keys=$(az ad app credential list --id $app_exists --query "[].keyId" --output tsv)
-        for key in $keys; do az ad app credential delete --id $app_exists --key-id $key; done
-        az ad app delete --id "$app_exists"
-        echo "Deleted existing Azure AD App with App ID: $app_exists"
-        sleep 60
-    fi
-
+    
     clientid=$(az ad app create --display-name $appregname --query appId --output tsv)
     #echo $clientid
     az ad sp create --id $clientid
@@ -220,7 +245,11 @@ if [ "$choice" = "1" ]; then
 else
 
     subscriptionID=$(az group show --name "rhel-ha" --query "id" --output tsv | cut -d '/' -f 3) >> $logfile
+    
+    az vm identity assign --name $vmname1 --resource-group $rgname
+    az vm identity assign --name $vmname2 --resource-group $rgname
 
+    
     echo "add role assignment to node1"
 
     spID=$(az resource list  --resource-group "rhel-ha" -n "prod-cl1-0" --query [*].identity.principalId --out tsv) >> $logfile
